@@ -1,11 +1,14 @@
-environment {
-    AWS_ACCOUNT_ID = "937991583079"
-    AWS_REGION = "us-east-1"
-    IMAGE_NAME = "react-vite-app"
-    IMAGE_TAG = "${BUILD_NUMBER}"
-    ECR_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
-    KUBECONFIG = "/var/lib/jenkins/.kube/config"
-}
+pipeline {
+    agent any
+
+    environment {
+        AWS_ACCOUNT_ID = "937991583079"
+        AWS_REGION = "us-east-1"
+        IMAGE_NAME = "react-vite-app"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        ECR_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
+        KUBECONFIG = "/var/lib/jenkins/.kube/config"
+    }
 
     stages {
 
@@ -37,7 +40,7 @@ environment {
             steps {
                 sh '''
                 aws ecr get-login-password --region $AWS_REGION | \
-                docker login --username AWS --password-stdin $ECR_REGISTRY
+                docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
                 '''
             }
         }
@@ -47,6 +50,7 @@ environment {
                 sh '''
                 docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_REPO:$IMAGE_TAG
                 docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_REPO:latest
+
                 docker push $ECR_REPO:$IMAGE_TAG
                 docker push $ECR_REPO:latest
                 '''
@@ -63,8 +67,20 @@ environment {
 
         stage('Verify Deployment Status') {
             steps {
-                sh 'kubectl rollout status deployment/react-vite-app'
+                sh '''
+                kubectl rollout status deployment/react-vite-app
+                '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
