@@ -6,7 +6,8 @@ pipeline {
         AWS_REGION = "us-east-1"
         IMAGE_NAME = "react-vite-app"
         IMAGE_TAG = "${BUILD_NUMBER}"
-        ECR_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
+        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        ECR_REPO = "${ECR_REGISTRY}/${IMAGE_NAME}"
     }
 
     stages {
@@ -39,7 +40,7 @@ pipeline {
             steps {
                 sh '''
                 aws ecr get-login-password --region $AWS_REGION | \
-                docker login --username AWS --password-stdin $ECR_REPO
+                docker login --username AWS --password-stdin $ECR_REGISTRY
                 '''
             }
         }
@@ -58,8 +59,7 @@ pipeline {
         stage('Update Kubernetes Deployment') {
             steps {
                 sh '''
-                kubectl set image deployment/react-vite-app \
-                react-vite-app=$ECR_REPO:latest
+                kubectl set image deployment/react-vite-app react-vite-app=$ECR_REPO:latest
                 '''
             }
         }
