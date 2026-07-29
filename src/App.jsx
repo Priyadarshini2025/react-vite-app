@@ -16,10 +16,11 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+          <h1>React CI/CD Pipeline Successfully Deployed</h1>
+
+<p>
+  This application is automatically deployed to Amazon EKS using Jenkins, Docker, and Amazon ECR.
+</p>
         </div>
         <button
           type="button"
