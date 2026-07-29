@@ -1,14 +1,11 @@
-pipeline {
-    agent any
-
-    environment {
-        AWS_ACCOUNT_ID = "937991583079"
-        AWS_REGION = "us-east-1"
-        IMAGE_NAME = "react-vite-app"
-        IMAGE_TAG = "${BUILD_NUMBER}"
-        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        ECR_REPO = "${ECR_REGISTRY}/${IMAGE_NAME}"
-    }
+environment {
+    AWS_ACCOUNT_ID = "937991583079"
+    AWS_REGION = "us-east-1"
+    IMAGE_NAME = "react-vite-app"
+    IMAGE_TAG = "${BUILD_NUMBER}"
+    ECR_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}"
+    KUBECONFIG = "/var/lib/jenkins/.kube/config"
+}
 
     stages {
 
